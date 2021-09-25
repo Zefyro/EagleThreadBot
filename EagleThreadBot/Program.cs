@@ -3,6 +3,11 @@ using System.IO;
 using System.Threading.Tasks;
 
 using DSharpPlus;
+using DSharpPlus.SlashCommands;
+
+using EagleThreadBot.SlashCommands;
+
+using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
 
@@ -12,6 +17,7 @@ namespace EagleThreadBot
 	{
 		public static Config Configuration { get; private set; }
 		public static DiscordClient Client { get; private set; }
+		public static SlashCommandsExtension Slashies { get; private set; }
 
 		internal static async Task Main(String[] args)
 		{
@@ -22,10 +28,17 @@ namespace EagleThreadBot
 			Client = new(new()
 			{
 				Token = Configuration.Token,
-				TokenType = TokenType.Bot
+				TokenType = TokenType.Bot,
+				MinimumLogLevel = LogLevel.Information
 			});
 
 			await Client.ConnectAsync();
+
+			Slashies = Client.UseSlashCommands();
+
+			Slashies.RegisterCommands<CreateCommand>(Configuration.GuildId);
+
+			await Task.Delay(-1);
 		}
 	}
 }
