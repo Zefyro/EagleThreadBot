@@ -37,6 +37,7 @@ namespace EagleThreadBot
 			Slashies = Client.UseSlashCommands();
 
 			Slashies.RegisterCommands<CreateCommand>(Configuration.GuildId);
+			Slashies.RegisterCommands<TagCommand>(Configuration.GuildId);
 
 			await Task.Delay(-1);
 		}
