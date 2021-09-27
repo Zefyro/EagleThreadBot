@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using DSharpPlus;
 using DSharpPlus.SlashCommands;
+using DSharpPlus.SlashCommands.EventArgs;
 
 using EagleThreadBot.SlashCommands;
 
@@ -39,7 +40,20 @@ namespace EagleThreadBot
 			Slashies.RegisterCommands<CreateCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<TagCommand>(Configuration.GuildId);
 
+			Slashies.SlashCommandErrored += Slashies_SlashCommandErrored;
+
 			await Task.Delay(-1);
+		}
+
+		private async static Task Slashies_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
+		{
+			await e.Context.FollowUpAsync(new()
+			{
+				Content = "An error occured. Please create an issue at <https://github.com/ExaInsanity/EagleThreadBot/issues/new> if this was unexpected.",
+				IsEphemeral = true
+			});
+
+			Console.WriteLine($"{e.Exception}: {e.Exception.Message}\n{e.Exception.StackTrace}");
 		}
 	}
 }

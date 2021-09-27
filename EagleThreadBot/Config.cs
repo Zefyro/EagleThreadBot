@@ -14,5 +14,8 @@ namespace EagleThreadBot
 
 		[JsonProperty("channels")]
 		public UInt64[] AllowedChannels { get; set; }
+
+		[JsonProperty("tagUrl")]
+		public String TagUrl { get; set; }
 	}
 }
