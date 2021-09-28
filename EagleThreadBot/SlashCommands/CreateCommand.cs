@@ -36,7 +36,7 @@ namespace EagleThreadBot.SlashCommands
 			await ctx.FollowUpAsync(new()
 			{
 				IsEphemeral = true,
-				Content = "Thread was created successfully."
+				Content = $"Thread about {subject} was created successfully."
 			});
 		}
 	}
