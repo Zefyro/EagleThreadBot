@@ -18,6 +18,12 @@ namespace EagleThreadBot
 		[JsonProperty("townhall")]
 		public UInt64[] TownhallChannels { get; set; }
 
+		[JsonProperty("roles")]
+		public UInt64[] ThreadRoles { get; set; }
+
+		[JsonProperty("threadPings")]
+		public Boolean ThreadPings { get; set; }
+
 		[JsonProperty("tagUrl")]
 		public String TagUrl { get; set; }
 	}
