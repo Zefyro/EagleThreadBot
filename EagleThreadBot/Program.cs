@@ -39,6 +39,7 @@ namespace EagleThreadBot
 
 			Slashies.RegisterCommands<CreateCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<TagCommand>(Configuration.GuildId);
+			Slashies.RegisterCommands<SuggestCommand>(Configuration.GuildId);
 
 			Slashies.SlashCommandErrored += Slashies_SlashCommandErrored;
 
