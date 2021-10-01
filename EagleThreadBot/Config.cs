@@ -21,7 +21,7 @@ namespace EagleThreadBot
 		[JsonProperty("roles")]
 		public UInt64[] ThreadRoles { get; set; }
 
-		[JsonProperty("threadpings")]
+		[JsonProperty("threadPings")]
 		public Boolean ThreadPings { get; set; }
 
 		[JsonProperty("tagUrl")]
