@@ -31,6 +31,10 @@ namespace EagleThreadBot.SlashCommands
 
 			DiscordMessage message = await thread.SendMessageAsync(subject);
 
+			if (Program.Configuration.ThreadPings)
+				foreach(var roleid in Program.Configuration.ThreadRoles)
+					await thread.SendMessageAsync($"<@&{roleid}>");
+
 			await message.PinAsync();
 
 			await ctx.FollowUpAsync(new()
