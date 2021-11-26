@@ -29,7 +29,7 @@ namespace EagleThreadBot.SlashCommands
 
 			DiscordThreadChannel thread = await ctx.Channel.CreateThreadAsync(subject, AutoArchiveDuration.Day, ChannelType.PublicThread);
 
-			DiscordMessage message = await thread.SendMessageAsync(subject);
+			DiscordMessage message = await thread.SendMessageAsync(subject + " " + ctx.Member.Mention);
 
 			if (Program.Configuration.ThreadPings)
 				foreach(var roleid in Program.Configuration.ThreadRoles)
