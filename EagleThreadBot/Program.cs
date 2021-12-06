@@ -6,8 +6,6 @@ using System.Timers;
 using DSharpPlus;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
-using DSharpPlus.Interactivity;
-using DSharpPlus.Interactivity.EventHandling;
 
 using EagleThreadBot.Common;
 using EagleThreadBot.SlashCommands;
@@ -104,7 +102,7 @@ namespace EagleThreadBot
 			String index = await httpClient.GetStringAsync($"{Program.Configuration.TagUrl}index.json");
 
 			// Store the index.json in cache
-			//File.WriteAllText("./cache/index.json", index);
+			File.WriteAllText("./cache/index.json", index);
 			Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated");
 		}
 
