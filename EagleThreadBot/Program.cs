@@ -1,19 +1,22 @@
 ﻿using System;
 using System.IO;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Timers;
 
 using DSharpPlus;
-//using DSharpPlus.Interactivity;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.EventHandling;
+
 using EagleThreadBot.Common;
 using EagleThreadBot.SlashCommands;
 
 using Microsoft.Extensions.Logging;
 
 using Newtonsoft.Json;
+using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus.Interactivity.Enums;
 
 namespace EagleThreadBot
 {
@@ -32,6 +35,15 @@ namespace EagleThreadBot
 				MinimumLogLevel = LogLevel.Information
 			});
 
+			Interactivity = Client.UseInteractivity(new()
+			{
+				AckPaginationButtons = true,
+				ButtonBehavior = ButtonPaginationBehavior.Ignore,
+				PaginationBehaviour = PaginationBehaviour.WrapAround,
+				PaginationDeletion = PaginationDeletion.DeleteMessage,
+				Timeout = TimeSpan.FromMinutes(3)
+			});
+
 			await Client.ConnectAsync();
 
 			// Create cache on startup
@@ -47,7 +59,7 @@ namespace EagleThreadBot
 			Slashies.RegisterCommands<SuggestCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<TagsCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<CacheCommand>(Configuration.GuildId);
-
+			
 			Slashies.SlashCommandErrored += Slashies_SlashCommandErrored;
 
 			await Task.Delay(-1);
@@ -91,15 +103,9 @@ namespace EagleThreadBot
 			
 			String index = await httpClient.GetStringAsync($"{Program.Configuration.TagUrl}index.json");
 
-			String cache = File.ReadAllText("./cache/index.json");
-
-			// Check if there are any changes
-			if (cache != index)
-			{
-				// Store the index.json in cache
-				File.WriteAllText("./cache/index.json", index);
-				Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated");
-			}
+			// Store the index.json in cache
+			//File.WriteAllText("./cache/index.json", index);
+			Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated");
 		}
 
         private async static Task Slashies_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)

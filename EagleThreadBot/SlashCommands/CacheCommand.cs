@@ -16,6 +16,8 @@ namespace EagleThreadBot.SlashCommands
         [SlashCommand("cache", "Force refresh the cache")]
         public static async Task Cache(InteractionContext ctx)
         {
+            await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
+
             if (!Directory.Exists("./cache"))
                 Directory.CreateDirectory("./cache");
             if (!File.Exists("./cache/index.json"))
@@ -23,20 +25,10 @@ namespace EagleThreadBot.SlashCommands
 
             String index = await Program.httpClient.GetStringAsync($"{Program.Configuration.TagUrl}index.json");
 
-            String cache = File.ReadAllText("./cache/index.json");
-
-            // Force refresh the cache if there are any changes
-            if (cache != index)
-            {
-                File.WriteAllText("./cache/index.json", index);
-                Program.Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated");
-                await ctx.CreateResponseAsync("Cache updated.");
-            }
-            else
-            {
-                Program.Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated but nothing changed");
-                await ctx.CreateResponseAsync("Cache updated but nothing changed.");
-            }
+            // Force refresh the cache
+            File.WriteAllText("./cache/index.json", index);
+            Program.Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated");
+            await ctx.CreateResponseAsync("Cache updated.");
         }
     }
 }

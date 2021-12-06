@@ -9,18 +9,16 @@ using EagleThreadBot.Common;
 
 namespace EagleThreadBot.SlashCommands
 {
+	[SlashModuleLifespan(SlashModuleLifespan.Singleton)]
 	public class TagCommand : ApplicationCommandModule
 	{
-
-		// Get the tag list from cache
-		private static TagIndex TagList = Program.GetTagList();
-
 		[SlashCommand("tag", "Fetches a tag from meta and posts it.")]
 		public async Task Tag(InteractionContext ctx, 
 			[Option("TagId", "Tag ID as found on the eaglecord meta repository.")]
 			String tag)
 		{
-
+			// Get the tag list from cache
+			TagIndex TagList = Program.GetTagList();
 
 			String url = "";
 			try

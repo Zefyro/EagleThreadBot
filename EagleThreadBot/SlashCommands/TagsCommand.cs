@@ -1,12 +1,12 @@
 ﻿using System;
-//using System.Collections.Generic;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-
+using DSharpPlus;
 using DSharpPlus.Entities;
-//using DSharpPlus.Interactivity;
-//using DSharpPlus.Interactivity.Enums;
-//using DSharpPlus.Interactivity.Extensions;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 
 using EagleThreadBot.Common;
@@ -35,11 +35,11 @@ namespace EagleThreadBot.SlashCommands
                 description += tag;
             }
             embed.Title = "Tags";
-            embed.Description = description;
-            await ctx.CreateResponseAsync(embed: embed);
+            //embed.Description = description;
+            //await ctx.CreateResponseAsync(embed: embed);
 
-            //IEnumerable<Page> pages = Program.Interactivity.GeneratePagesInEmbed(description, SplitType.Line, embed);
-            //await ctx.Channel?.SendPaginatedMessageAsync(ctx.Member, pages);
+            IEnumerable<Page> pages = Program.Interactivity.GeneratePagesInEmbed(description, SplitType.Line, embed);
+            await ctx.Channel?.SendPaginatedMessageAsync(ctx.Member, pages);
         }
     }
 }
