@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.Attributes;
+
 using Microsoft.Extensions.Logging;
 
 namespace EagleThreadBot.SlashCommands
@@ -12,7 +13,7 @@ namespace EagleThreadBot.SlashCommands
     public class CacheCommand : ApplicationCommandModule
     {
         [SlashRequirePermissions(Permissions.Administrator)]
-        [SlashCommand("cache", "Force updates the cache")]
+        [SlashCommand("cache", "Force refresh the cache")]
         public static async Task Cache(InteractionContext ctx)
         {
             if (!Directory.Exists("./cache"))
@@ -24,6 +25,7 @@ namespace EagleThreadBot.SlashCommands
 
             String cache = File.ReadAllText("./cache/index.json");
 
+            // Force refresh the cache if there are any changes
             if (cache != index)
             {
                 File.WriteAllText("./cache/index.json", index);

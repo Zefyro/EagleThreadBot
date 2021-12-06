@@ -16,7 +16,10 @@ namespace EagleThreadBot.SlashCommands
     public class TagsCommand : ApplicationCommandModule
     {
         private static DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
-		private static TagIndex TagList = Program.GetTagList();
+
+        // Get the tag list from cache
+        private static TagIndex TagList = Program.GetTagList();
+
         [SlashCommand("tags", "Fetches a list of tags from meta and posts them.")]
         public async Task Tags(InteractionContext ctx)
         {

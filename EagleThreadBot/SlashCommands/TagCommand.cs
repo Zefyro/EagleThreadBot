@@ -11,6 +11,8 @@ namespace EagleThreadBot.SlashCommands
 {
 	public class TagCommand : ApplicationCommandModule
 	{
+
+		// Get the tag list from cache
 		private static TagIndex TagList = Program.GetTagList();
 
 		[SlashCommand("tag", "Fetches a tag from meta and posts it.")]

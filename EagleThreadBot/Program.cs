@@ -33,8 +33,11 @@ namespace EagleThreadBot
 			});
 
 			await Client.ConnectAsync();
+
+			// Create cache on startup
 			await UpdateLocalCache();
 
+			// Start cache timer
 			StartTimer();
 			
 			Slashies = Client.UseSlashCommands();
@@ -52,12 +55,14 @@ namespace EagleThreadBot
 
         private static void StartTimer()
         {
+			// Get the cache interval from config (15+ minute cycles)
 			Int32 timerInterval = 15;
 			if (Configuration.UpdateCache < timerInterval)
 				timerInterval = 15 * 60 * 1000;
 			else
 				timerInterval = Configuration.UpdateCache * 60 * 1000;
 
+			// Update cache each cycle
 			timer.Elapsed += Timer_Elapsed;
 			timer.Interval = timerInterval;
 			timer.AutoReset = true;
@@ -67,11 +72,13 @@ namespace EagleThreadBot
 
         private static async void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
+			// Update cache
 			await UpdateLocalCache();
         }
 
         private static async Task UpdateLocalCache()
         {
+			
 			if (File.Exists("./cache/index.json")
 				&& File.GetLastWriteTimeUtc("./cache/index.json") 
 				>= (DateTime.UtcNow + TimeSpan.FromMinutes(15)))
@@ -86,8 +93,10 @@ namespace EagleThreadBot
 
 			String cache = File.ReadAllText("./cache/index.json");
 
+			// Check if there are any changes
 			if (cache != index)
 			{
+				// Store the index.json in cache
 				File.WriteAllText("./cache/index.json", index);
 				Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated");
 			}
@@ -105,6 +114,7 @@ namespace EagleThreadBot
 		}
 		public static TagIndex GetTagList()
         {
+			// Get the tag list from cache
 			StreamReader sr = new("./cache/index.json");
 			TagList = JsonConvert.DeserializeObject<TagIndex>(sr.ReadToEnd());
 			sr.Close();
