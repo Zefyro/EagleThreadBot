@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 
 using DSharpPlus;
@@ -9,32 +7,31 @@ using DSharpPlus.SlashCommands;
 
 using EagleThreadBot.Common;
 
-using Newtonsoft.Json;
-
 namespace EagleThreadBot.SlashCommands
 {
 	public class TagCommand : ApplicationCommandModule
 	{
+		private static TagIndex TagList = Program.GetTagList();
+
 		[SlashCommand("tag", "Fetches a tag from meta and posts it.")]
 		public async Task Tag(InteractionContext ctx, 
 			[Option("TagId", "Tag ID as found on the eaglecord meta repository.")]
 			String tag)
 		{
-			await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource);
 
-			HttpClient client = new();
 
-			String index = await client.GetStringAsync($"{Program.Configuration.TagUrl}index.json");
-
-			List<TagIndex> indices = JsonConvert.DeserializeObject<List<TagIndex>>(index);
-
-			String url;
-
+			String url = "";
 			try
 			{
-				url = (from i in indices
-					   where i.Identifier == tag || i.Aliases.Contains(tag)
-					   select i.Url)?.First();
+				for (UInt32 i = 0; i < TagList.index.Length; i++)
+				{
+					if (TagList.index[i].identifier == tag
+						|| TagList.index[i].aliases.Contains(tag))
+					{
+						url = TagList.index[i].url;
+						break;
+					}
+				}
 			}
 			catch
 			{
@@ -45,11 +42,16 @@ namespace EagleThreadBot.SlashCommands
 				});
 				return;
 			}
-
-			await ctx.FollowUpAsync(new()
-			{
-				Content = await client.GetStringAsync($"{Program.Configuration.TagUrl}{url}")
-			});
+			if (url == "")
+            {
+				await ctx.FollowUpAsync(new()
+				{
+					Content = $"Could not fetch url for {tag}. Try again.",
+					IsEphemeral = true
+				});
+				return;
+			}
+            await ctx.CreateResponseAsync(content: await Program.httpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}"));
 		}
 	}
 }

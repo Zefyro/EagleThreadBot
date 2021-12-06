@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-
-using Newtonsoft.Json;
-
-namespace EagleThreadBot.Common
+﻿namespace EagleThreadBot.Common
 {
-	internal class TagIndex
-	{
-		[JsonProperty("identifier")]
-		public String Identifier { get; set; }
-
-		[JsonProperty("aliases")]
-		public List<String> Aliases { get; set; }
-
-		[JsonProperty("url")]
-		public String Url { get; set; }
-	}
+    public class TagIndex
+    {
+        public Index[] index { get; set; }
+    }
+    public class Index
+    {
+        public string identifier { get; set; }
+        public string[] aliases { get; set; }
+        public string url { get; set; }
+    }
 }

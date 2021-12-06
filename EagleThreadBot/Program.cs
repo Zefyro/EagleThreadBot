@@ -1,11 +1,14 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
+using System.Timers;
 
 using DSharpPlus;
+//using DSharpPlus.Interactivity;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
-
+using EagleThreadBot.Common;
 using EagleThreadBot.SlashCommands;
 
 using Microsoft.Extensions.Logging;
@@ -14,12 +17,8 @@ using Newtonsoft.Json;
 
 namespace EagleThreadBot
 {
-	internal static class Program
+	internal partial class Program
 	{
-		public static Config Configuration { get; private set; }
-		public static DiscordClient Client { get; private set; }
-		public static SlashCommandsExtension Slashies { get; private set; }
-
 		internal static async Task Main(String[] args)
 		{
 			StreamReader reader = new("./config.json");
@@ -34,19 +33,67 @@ namespace EagleThreadBot
 			});
 
 			await Client.ConnectAsync();
+			await UpdateLocalCache();
 
+			StartTimer();
+			
 			Slashies = Client.UseSlashCommands();
 
 			Slashies.RegisterCommands<CreateCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<TagCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<SuggestCommand>(Configuration.GuildId);
+			Slashies.RegisterCommands<TagsCommand>(Configuration.GuildId);
+			Slashies.RegisterCommands<CacheCommand>(Configuration.GuildId);
 
 			Slashies.SlashCommandErrored += Slashies_SlashCommandErrored;
 
 			await Task.Delay(-1);
 		}
 
-		private async static Task Slashies_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
+        private static void StartTimer()
+        {
+			Int32 timerInterval = 15;
+			if (Configuration.UpdateCache < timerInterval)
+				timerInterval = 15 * 60 * 1000;
+			else
+				timerInterval = Configuration.UpdateCache * 60 * 1000;
+
+			timer.Elapsed += Timer_Elapsed;
+			timer.Interval = timerInterval;
+			timer.AutoReset = true;
+			timer.Enabled = true;
+			timer.Start();
+		}
+
+        private static async void Timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+			await UpdateLocalCache();
+        }
+
+        private static async Task UpdateLocalCache()
+        {
+			if (File.Exists("./cache/index.json")
+				&& File.GetLastWriteTimeUtc("./cache/index.json") 
+				>= (DateTime.UtcNow + TimeSpan.FromMinutes(15)))
+				return;
+
+			if (!Directory.Exists("./cache"))
+				Directory.CreateDirectory("./cache");
+			if (!File.Exists("./cache/index.json"))
+				File.Create("./cache/index.json");
+			
+			String index = await httpClient.GetStringAsync($"{Program.Configuration.TagUrl}index.json");
+
+			String cache = File.ReadAllText("./cache/index.json");
+
+			if (cache != index)
+			{
+				File.WriteAllText("./cache/index.json", index);
+				Client.Logger.LogInformation(new EventId(10, "Cache"), "Cache updated");
+			}
+		}
+
+        private async static Task Slashies_SlashCommandErrored(SlashCommandsExtension sender, SlashCommandErrorEventArgs e)
 		{
 			await e.Context.FollowUpAsync(new()
 			{
@@ -55,6 +102,13 @@ namespace EagleThreadBot
 			});
 
 			Console.WriteLine($"{e.Exception}: {e.Exception.Message}\n{e.Exception.StackTrace}");
+		}
+		public static TagIndex GetTagList()
+        {
+			StreamReader sr = new("./cache/index.json");
+			TagList = JsonConvert.DeserializeObject<TagIndex>(sr.ReadToEnd());
+			sr.Close();
+			return TagList;
 		}
 	}
 }
