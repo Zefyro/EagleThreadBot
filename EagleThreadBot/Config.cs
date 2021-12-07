@@ -26,8 +26,5 @@ namespace EagleThreadBot
 
 		[JsonProperty("tagUrl")]
 		public String TagUrl { get; set; }
-
-		[JsonProperty("updateCache")]
-		public UInt16 UpdateCache { get; set; }
 	}
 }

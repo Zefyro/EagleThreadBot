@@ -70,10 +70,9 @@ namespace EagleThreadBot.SlashCommands
 
 			if (isEmbed)
             {
+				DiscordEmbedBuilder embed = new();
 				if (!isPaged)
                 {
-					DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
-
 					embed.Description = Tag;
 
 					await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url}>" });
@@ -81,10 +80,7 @@ namespace EagleThreadBot.SlashCommands
 				}
                 else
                 {
-					DiscordEmbedBuilder embed = new();
-
-					await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/ " + $"{url}>" });
-
+					await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url}>" });
 					IEnumerable<Page> pages = Program.Interactivity.GeneratePagesInEmbed(Tag, SplitType.Line, embed);
 					await ctx.Channel?.SendPaginatedMessageAsync(ctx.Member, pages);
 				}
@@ -92,7 +88,6 @@ namespace EagleThreadBot.SlashCommands
             else
             {
 				await ctx.EditResponseAsync(new() { Content = Tag });
-				Console.WriteLine(isEmbed + "\n" + isPaged);
             }
 
         }

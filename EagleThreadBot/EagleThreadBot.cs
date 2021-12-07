@@ -1,14 +1,12 @@
 ﻿using System.IO;
 using System;
 using System.Net.Http;
-using System.Timers;
 
 using DSharpPlus;
 using DSharpPlus.Interactivity;
 using DSharpPlus.SlashCommands;
 using EagleThreadBot.Common;
 
-using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 
 namespace EagleThreadBot
