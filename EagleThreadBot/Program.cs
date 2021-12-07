@@ -1,13 +1,11 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
-using System.Timers;
 
 using DSharpPlus;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
 
-using EagleThreadBot.Common;
 using EagleThreadBot.SlashCommands;
 
 using Microsoft.Extensions.Logging;
