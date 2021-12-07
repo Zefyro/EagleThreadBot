@@ -68,8 +68,11 @@ namespace EagleThreadBot.SlashCommands
 				});
 				return;
 			}
-			String Tag = $"[**{url}**](https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url})\n\n" 
-				+ await Program.HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}");
+			String Tag = "";
+			if (isEmbed)
+				Tag = $"[**{url}**](https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url})\n\n";
+
+			Tag += await Program.HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}");
 			String ephemeral = "";
 
 			if ((Tag.Length >= 4000 || (isEphemeral && isPaged)) && !isEmbed)
