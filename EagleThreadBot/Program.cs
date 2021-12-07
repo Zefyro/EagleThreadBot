@@ -1,11 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using System.Timers;
 
 using DSharpPlus;
 using DSharpPlus.SlashCommands;
 using DSharpPlus.SlashCommands.EventArgs;
 
+using EagleThreadBot.Common;
 using EagleThreadBot.SlashCommands;
 
 using Microsoft.Extensions.Logging;
@@ -44,7 +46,7 @@ namespace EagleThreadBot
 
 			// Create cache on startup
 			await UpdateLocalCache();
-
+      
 			Slashies = Client.UseSlashCommands();
 
 			Slashies.RegisterCommands<CreateCommand>(Configuration.GuildId);
@@ -52,12 +54,11 @@ namespace EagleThreadBot
 			Slashies.RegisterCommands<SuggestCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<TagsCommand>(Configuration.GuildId);
 			Slashies.RegisterCommands<CacheCommand>(Configuration.GuildId);
-
+      
 			Slashies.SlashCommandErrored += Slashies_SlashCommandErrored;
 
 			await Task.Delay(-1);
 		}
-
 		private static async Task UpdateLocalCache()
 		{
 
@@ -70,7 +71,7 @@ namespace EagleThreadBot
 				Directory.CreateDirectory("./cache");
 			if (!File.Exists("./cache/index.json"))
 				File.Create("./cache/index.json");
-
+      
 			String index = await HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}index.json");
 
 			// Store the index.json in cache
