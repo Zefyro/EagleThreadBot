@@ -8,8 +8,6 @@ using DSharpPlus.Interactivity.Enums;
 using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 
-using EagleThreadBot.Common;
-
 namespace EagleThreadBot.SlashCommands
 {
     public class TagsCommand : ApplicationCommandModule
