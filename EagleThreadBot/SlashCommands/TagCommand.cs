@@ -68,6 +68,7 @@ namespace EagleThreadBot.SlashCommands
 				});
 				return;
 			}
+      
 			String Tag = $"[**{url}**](https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url})\n\n" 
 				+ await Program.HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}");
 			String ephemeral = "";
@@ -87,26 +88,26 @@ namespace EagleThreadBot.SlashCommands
 			}
 
 			if (isEmbed)
-            {
-				DiscordEmbedBuilder embed = new();
-				DiscordWebhookBuilder webhook = new();
-				if (!isPaged)
-                {
-					embed.Description = Tag;
-					webhook.AddEmbed(embed);
-					await ctx.EditResponseAsync(webhook);
-				}
-				else
-				{
-					await ctx.EditResponseAsync(new() { Content = ephemeral });
-					IEnumerable<Page> pages = Program.Interactivity.GeneratePagesInEmbed(Tag, SplitType.Line, embed);
-					await ctx.Channel?.SendPaginatedMessageAsync(ctx.Member, pages);
-				}
-            }
-            else
-            {
-				await ctx.EditResponseAsync(new() { Content = Tag });
-            }
-        }
-	}
+      {
+				  DiscordEmbedBuilder embed = new();
+				  if (!isPaged)
+          {
+					    embed.Description = Tag;
+
+					    await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url}>" });
+              await ctx.Channel?.SendMessageAsync(embed: embed);
+				  }
+          else
+          {
+					    await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url}>" });
+					    IEnumerable<Page> pages = Program.Interactivity.GeneratePagesInEmbed(Tag, SplitType.Line, embed);
+					    await ctx.Channel?.SendPaginatedMessageAsync(ctx.Member, pages);
+				  }
+      }
+      else
+      {
+				  await ctx.EditResponseAsync(new() { Content = Tag });
+      }
+    }
+	  }
 }
