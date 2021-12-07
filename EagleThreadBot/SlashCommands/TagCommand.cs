@@ -19,9 +19,11 @@ namespace EagleThreadBot.SlashCommands
 		[SlashCommand("tag", "Fetches a tag from meta and posts it.")]
 		public async Task Tag(InteractionContext ctx,
 			[Option("TagId", "Tag ID as found on the eaglecord meta repository.")]
-			String tag)
+			String tag, 
+			[Option("isEphemeral", "Request the tag as ephemeral.")] 
+			Boolean isEphemeral = false)
 		{
-			await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new());
+			await ctx.CreateResponseAsync(InteractionResponseType.DeferredChannelMessageWithSource, new() { IsEphemeral = isEphemeral });
 
 			// Get the tag list from cache
 			TagIndex TagList = Program.TagList;
@@ -48,7 +50,7 @@ namespace EagleThreadBot.SlashCommands
 					}
 				}
 			}
-			catch
+			catch 
 			{
 				await ctx.FollowUpAsync(new()
 				{
@@ -66,21 +68,37 @@ namespace EagleThreadBot.SlashCommands
 				});
 				return;
 			}
-			String Tag = await Program.HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}");
+			String Tag = $"[**{url}**](https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url})\n\n" 
+				+ await Program.HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}");
+			String ephemeral = "";
+
+			if ((Tag.Length >= 4000 || (isEphemeral && isPaged)) && !isEmbed)
+			{
+				if (isEphemeral)
+					ephemeral = "Could not request tag as ephemeral.";
+				isPaged = true;
+				isEmbed = true;
+			}
+			else if ((Tag.Length >= 4096 || (isEphemeral && isPaged)) && isEmbed)
+			{
+				if (isEphemeral)
+					ephemeral = "Could not request tag as ephemeral.";
+				isPaged = true;
+			}
 
 			if (isEmbed)
             {
 				DiscordEmbedBuilder embed = new();
+				DiscordWebhookBuilder webhook = new();
 				if (!isPaged)
                 {
 					embed.Description = Tag;
-
-					await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url}>" });
-					await ctx.Channel?.SendMessageAsync(embed: embed);
+					webhook.AddEmbed(embed);
+					await ctx.EditResponseAsync(webhook);
 				}
-                else
-                {
-					await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url}>" });
+				else
+				{
+					await ctx.EditResponseAsync(new() { Content = ephemeral });
 					IEnumerable<Page> pages = Program.Interactivity.GeneratePagesInEmbed(Tag, SplitType.Line, embed);
 					await ctx.Channel?.SendPaginatedMessageAsync(ctx.Member, pages);
 				}
@@ -89,7 +107,6 @@ namespace EagleThreadBot.SlashCommands
             {
 				await ctx.EditResponseAsync(new() { Content = Tag });
             }
-
         }
 	}
 }
