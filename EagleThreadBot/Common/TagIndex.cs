@@ -23,5 +23,12 @@ namespace EagleThreadBot.Common
         // Get the tag url from index
         [JsonProperty("url")]
         public String url { get; set; }
+        // Get if the tag is embed
+        [JsonProperty("isEmbed")]
+        public Boolean isEmbed { get; set; }
+
+        // Get if the tag is paged
+        [JsonProperty("isPaged")]
+        public Boolean isPaged { get; set; }
     }
 }

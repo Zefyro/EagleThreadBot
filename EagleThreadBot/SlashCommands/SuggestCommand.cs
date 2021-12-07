@@ -12,11 +12,11 @@ namespace EagleThreadBot.SlashCommands
 	{
 		[SlashCommand("suggest", "Creates a suggestion thread for your idea.")]
 		public async Task CreateThreadCommand(InteractionContext ctx,
-			
+
 			[Option("Subject", "Specifies the subject for your suggestion thread.")]
 			String subject)
 		{
-			if(!Program.Configuration.TownhallChannels.Contains(ctx.Channel.Id))
+			if (!Program.Configuration.TownhallChannels.Contains(ctx.Channel.Id))
 			{
 				await ctx.CreateResponseAsync(InteractionResponseType.ChannelMessageWithSource, new()
 				{
@@ -32,7 +32,7 @@ namespace EagleThreadBot.SlashCommands
 			DiscordMessage message = await thread.SendMessageAsync(subject + " " + ctx.Member.Mention);
 
 			if (Program.Configuration.ThreadPings)
-				foreach(var roleid in Program.Configuration.ThreadRoles)
+				foreach (var roleid in Program.Configuration.ThreadRoles)
 					await thread.SendMessageAsync($"<@&{roleid}>");
 
 			await message.PinAsync();
