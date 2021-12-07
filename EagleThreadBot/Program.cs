@@ -60,12 +60,6 @@ namespace EagleThreadBot
 			await Task.Delay(-1);
 		}
 
-		private static async void Timer_Elapsed(object sender, ElapsedEventArgs e)
-		{
-			// Update cache
-			await UpdateLocalCache();
-		}
-
 		private static async Task UpdateLocalCache()
 		{
 

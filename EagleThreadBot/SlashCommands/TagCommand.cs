@@ -1,8 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 using DSharpPlus;
+using DSharpPlus.Entities;
+using DSharpPlus.Interactivity;
+using DSharpPlus.Interactivity.Enums;
+using DSharpPlus.Interactivity.Extensions;
 using DSharpPlus.SlashCommands;
 
 using EagleThreadBot.Common;
@@ -22,6 +27,8 @@ namespace EagleThreadBot.SlashCommands
 			TagIndex TagList = Program.TagList;
 
 			String url = "";
+			Boolean isEmbed = false;
+			Boolean isPaged = false;
 			try
 			{
 				for (UInt32 i = 0; i < TagList.index.Length; i++)
@@ -30,6 +37,13 @@ namespace EagleThreadBot.SlashCommands
 						|| TagList.index[i].aliases.Contains(tag))
 					{
 						url = TagList.index[i].url;
+
+						if (TagList.index[i].isEmbed)
+                        {
+							isEmbed = true;
+							if (TagList.index[i].isPaged)
+								isPaged = true;
+						}
 						break;
 					}
 				}
@@ -52,11 +66,35 @@ namespace EagleThreadBot.SlashCommands
 				});
 				return;
 			}
-			await ctx.EditResponseAsync(
-				new()
-				{
-					Content = await Program.HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}")
-				});
-		}
+			String Tag = await Program.HttpClient.GetStringAsync($"{Program.Configuration.TagUrl}{url}");
+
+			if (isEmbed)
+            {
+				if (!isPaged)
+                {
+					DiscordEmbedBuilder embed = new DiscordEmbedBuilder();
+
+					embed.Description = Tag;
+
+					await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/" + $"{url}>" });
+					await ctx.Channel?.SendMessageAsync(embed: embed);
+				}
+                else
+                {
+					DiscordEmbedBuilder embed = new();
+
+					await ctx.EditResponseAsync(new() { Content = "<https://github.com/ExaInsanity/eaglecord-meta/blob/main/ " + $"{url}>" });
+
+					IEnumerable<Page> pages = Program.Interactivity.GeneratePagesInEmbed(Tag, SplitType.Line, embed);
+					await ctx.Channel?.SendPaginatedMessageAsync(ctx.Member, pages);
+				}
+            }
+            else
+            {
+				await ctx.EditResponseAsync(new() { Content = Tag });
+				Console.WriteLine(isEmbed + "\n" + isPaged);
+            }
+
+        }
 	}
 }
